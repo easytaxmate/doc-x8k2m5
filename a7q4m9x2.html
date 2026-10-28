@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>양도소득세 확인서 전자서명</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1d2433;--sub:#5b6577;--line:#dfe3ea;--brand:#1f3864;--accent:#2e5597;--ok:#1a7f4b;--warn:#c0392b;--chip:#eef2f8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151c;--card:#1a2029;--ink:#e8ecf2;--sub:#9aa5b5;--line:#2c3542;--brand:#8fb0e8;--accent:#8fb0e8;--chip:#232b37}}
+:root[data-theme="dark"]{--bg:#11151c;--card:#1a2029;--ink:#e8ecf2;--sub:#9aa5b5;--line:#2c3542;--brand:#8fb0e8;--accent:#8fb0e8;--chip:#232b37}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;font-size:15px;line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 120px}
+header{background:var(--brand);color:#fff;border-radius:14px;padding:18px 18px 16px;margin-bottom:14px}
+header h1{margin:0;font-size:19px}header p{margin:4px 0 0;font-size:13px;opacity:.85}
+.steps{display:flex;gap:6px;margin:12px 0}.steps span{flex:1;text-align:center;font-size:12px;padding:6px 0;border-radius:8px;background:var(--chip);color:var(--sub)}.steps span.on{background:var(--accent);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+h2{font-size:16px;margin:0 0 10px;color:var(--brand)}h3{font-size:14.5px;margin:14px 0 6px;color:var(--accent)}
+ul{margin:4px 0;padding-left:18px}li{margin:3px 0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}table{width:100%;border-collapse:collapse;font-size:13px}td,th{border:1px solid var(--line);padding:5px 6px;word-break:keep-all}th{background:var(--chip);font-weight:500}td.r{text-align:right;white-space:nowrap}
+.note{font-size:12.5px;color:var(--sub)}
+details{border-top:1px solid var(--line);padding:8px 0}details summary{cursor:pointer;font-weight:500}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.q .n{display:inline-block;min-width:34px;font-weight:700;color:var(--accent)}
+.q .t{margin:2px 0 8px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts label{flex:1;min-width:110px;text-align:center;border:1.5px solid var(--line);border-radius:10px;padding:10px 6px;cursor:pointer;user-select:none}
+.opts input{display:none}.opts input:checked+span{font-weight:700}
+.opts label:has(input:checked){border-color:var(--accent);background:var(--chip)}
+.q input[type=text]{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin-top:8px;font:inherit;background:var(--card);color:var(--ink)}
+.q.miss{border-color:var(--warn)}
+.agree{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:10px;background:var(--chip);cursor:pointer}
+.agree input{width:22px;height:22px;margin-top:2px;flex:none}
+.sig{border:1.5px dashed var(--accent);border-radius:12px;background:#fff;height:170px;position:relative;touch-action:none}
+.sig canvas{width:100%;height:100%;display:block;border-radius:12px}
+.sig .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9aa5b5;pointer-events:none}
+.row{display:flex;gap:8px;margin-top:8px}.btn{border:0;border-radius:10px;padding:12px 14px;font:inherit;font-weight:700;cursor:pointer}
+.btn.sec{background:var(--chip);color:var(--ink)}.btn.pri{background:var(--accent);color:#fff;width:100%;font-size:16px;padding:15px}
+.btn:disabled{opacity:.5}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px}
+.foot .in{max-width:720px;margin:0 auto}
+.err{color:var(--warn);font-size:13px;margin-top:6px;display:none}
+.done{display:none;text-align:center}.done.show{display:block}
+.office{text-align:center;font-size:12.5px;color:var(--sub);margin-top:18px}
+/* PDF 출력용 */
+#pdf{position:absolute;left:-9999px;top:0;width:794px;background:#fff;color:#111;font-family:"Noto Sans KR",sans-serif;font-size:13px;line-height:1.55;padding:40px 46px}
+#pdf h1{font-size:20px;text-align:center;margin:0 0 4px}#pdf .s{text-align:center;color:#555;font-size:12px;margin-bottom:14px}
+#pdf h2{font-size:14px;color:#1f3864;border-bottom:2px solid #1f3864;padding-bottom:3px;margin:16px 0 8px}
+#pdf table{border-collapse:collapse;width:100%}#pdf td,#pdf th{border:1px solid #999;padding:5px 7px;vertical-align:top;font-size:12px}#pdf th{background:#e8eef7}
+#pdf .ans{font-weight:700;color:#1f3864;white-space:nowrap}
+#pdf .sigbox{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:10px}#pdf .sigbox img{height:70px;border-bottom:1px solid #333}
+#pdf .meta{font-size:10.5px;color:#666;margin-top:14px;border-top:1px solid #ccc;padding-top:6px}
+</style></head><body>
+<div class="wrap">
+<header><h1>양도소득세 신고 확인서 전자서명</h1><p>권순형 고객님 · 광명시흥 공공주택지구 토지 협의매수(2026. 8. 3. 양도)<br>세주세무회계사무소 세무사 이태현</p></header>
+<p class="note" style="margin:0 0 12px">※ 카카오톡 안에서 열었을 때 서명이나 PDF 버튼이 잘 동작하지 않으면, 화면 오른쪽 위(또는 아래)의 메뉴(⋮ 또는 ···)에서 <b>‘다른 브라우저로 열기’</b>를 눌러 주세요.</p><div class="steps"><span id="st1" class="on">① 안내 확인</span><span id="st2">② 사실 확인</span><span id="st3">③ 서명·회신</span></div>
+
+<!-- ① 안내문 -->
+<section class="card" id="s1">
+<h2>① 양도소득세 신고 주요 쟁점 및 처리 안내</h2>
+<div class="tw"><table><tr><th>양도자산</th><th>지분</th><th>취득일</th><th>토지보상금</th><th>지장물·수목 등</th></tr>
+<tr><td>광명동 503 (전)</td><td>1/2</td><td>2015.3.9.</td><td class="r">1,714,797,750</td><td class="r">117,728,000</td></tr>
+<tr><td>옥길동 314-3 (전)</td><td>1/1</td><td>2020.1.20.</td><td class="r">1,889,293,500</td><td class="r">124,575,500</td></tr></table></div>
+<p class="note">사업시행자: 한국토지주택공사·경기주택도시공사 / 사업인정고시일 2022.11.29. / 전액 현금보상</p>
+
+<details open><summary>취득가액 확인 방법</summary><ul>
+<li><b>광명동 503</b>: 보관 중인 매매계약서는 이전 소유자(김원현)의 취득계약서여서, 등기부등본의 2015.3.9. 거래가액 1,246,580,000원 중 고객님 지분 1/2인 623,290,000원을 취득가액으로 하였습니다. 취득세·등기비용을 더한 취득가액은 645,810,675원입니다.</li>
+<li><b>옥길동 314-3</b>: 매매대금 1,020,000,000원에 취득세·등기비용을 더한 1,060,548,520원입니다(중개수수료는 쟁점 ⑤에 따라 제외).</li></ul></details>
+
+<details><summary>쟁점 ① 옥길동 비사업용 토지 여부 → 비사업용 토지로 신고</summary><ul>
+<li>수용 토지라도 사업인정고시일부터 5년 이전에 취득해야 비사업용 토지에서 자동 제외되는데, 옥길동은 2020년에 취득하여 해당하지 않습니다.</li>
+<li>지목은 ‘전’이지만 실제 공장용지로 사용했고 재산세가 종합합산으로 과세되어 비사업용 토지에 해당합니다(소득세법 제104조의3 제1항 제4호).</li>
+<li>원재료·제품 적치장으로 사용한 면적은 추후 자료가 확보되면 경정청구를 검토할 수 있습니다.</li></ul></details>
+
+<details><summary>쟁점 ② 지장물 보상금 → 토지 양도가액에 포함</summary><ul>
+<li>지장물은 토지에 정착된 물건으로 토지와 함께 수용되었으므로 토지의 양도대가에 해당합니다.</li>
+<li>지장물 가격은 토지 취득 당시 매매대금, 즉 토지 취득가액에 이미 포함되어 있으므로 양도가액에도 포함하는 것이 일관된 처리입니다.</li>
+<li>그 결과 지장물 보상금에도 장기보유특별공제(광명 22%, 옥길 12%)와 공익사업 감면(15%)이 적용됩니다.</li>
+<li>광명동 지장물 보상금은 고객님 단독 소유로 전액 지급되어 고객님 지분 토지에 포함하였으며, 공유자 확인을 받습니다.</li></ul></details>
+
+<details><summary>쟁점 ③ 수목 보상금 → 토지 양도가액에 포함</summary><ul>
+<li>수목은 토지와 함께 취득·수용된 정착물이며, 취득가액에서 수목 몫만 떼어낼 객관적인 기준이 없어 토지 양도가액에 포함하였습니다(광명 11,880,000원, 옥길 4,306,500원).</li></ul></details>
+
+<details><summary>쟁점 ④ 호이스트 등 시설 보상금(18,365,000원) → 토지 양도가액에 포함</summary><ul>
+<li>호이스트(H빔·레일) 등은 토지에 고정된 시설로 토지와 함께 취득하였고, 이전하지 않고 가격으로 보상받은 것으로 보아 토지 양도가액에 포함하였습니다.</li>
+<li>이 처리는 가격 보상·고정 시설·토지와 함께 취득·장부 미계상을 전제로 하므로 아래 9번 항목으로 확인합니다.</li>
+<li>보상 감정평가 명세에서 옮길 수 있는 물품(기계·집기·원재료 등) 몫이 확인되면 그 부분은 2026년 귀속 사업소득으로 신고합니다.</li></ul></details>
+
+<details><summary>쟁점 ⑤ 옥길동 중개수수료 10,098,000원 → 취득가액에서 제외</summary><ul>
+<li>2020년 귀속 종합소득세 신고 때 이미 사업 비용으로 처리되었으므로 이중공제를 피하기 위해 제외하였습니다.</li></ul></details>
+
+<details><summary>쟁점 ⑥ 감면 한도 → 한도 이내</summary><ul>
+<li>공익사업 감면 한도는 1년 2억원, 5년 3억원이며 이번 감면세액(약 1억1,277만원)은 한도 이내입니다.</li></ul></details>
+
+<details><summary>쟁점 ⑦ 신고서 반영사항</summary><ul>
+<li>지장물·수목·시설 보상금 전액(242,303,500원)을 각 토지 양도가액에 합산하였습니다.</li>
+<li>세액감면신청서와 수용사실확인서를 함께 제출하고, 개인지방소득세는 위택스로 별도 신고합니다.</li></ul></details>
+
+<h3>예상 납부세액 (2026.10.30. 신고서 기준)</h3>
+<div class="tw"><table><tr><th>구분</th><th>합계</th><th>1차 (11.2.까지)</th><th>2차 분납 (2027.1.4.까지)</th></tr>
+<tr><td>양도소득세</td><td class="r">639,053,214</td><td class="r">319,526,607</td><td class="r">319,526,607</td></tr>
+<tr><td>농어촌특별세</td><td class="r">22,554,819</td><td class="r">11,277,409</td><td class="r">11,277,410</td></tr>
+<tr><td>개인지방소득세</td><td class="r">63,905,322</td><td class="r">63,905,322</td><td class="r">–</td></tr>
+<tr><th>합계</th><th class="r">725,513,355</th><th class="r">394,709,338</th><th class="r">330,804,017</th></tr></table></div>
+<p class="note">※ 확인서 회신 내용과 보상 감정평가 명세에 따라 달라질 수 있습니다.</p>
+<label class="agree" style="margin-top:12px"><input type="checkbox" id="readOk"><span><b>위 안내 내용을 읽고 이해하였습니다.</b></span></label>
+<div class="err" id="e1">안내 내용 확인에 체크해 주세요.</div>
+</section>
+
+<!-- ② 확인서 -->
+<section class="card" id="s2">
+<h2>② 사실확인서</h2>
+<p class="note">각 항목에서 해당하는 답을 눌러 주세요. 필요한 경우 내용을 직접 적어 주세요.</p>
+<div id="qs"></div>
+<p class="note" style="color:var(--warn)"><b>※ 함께 보내 주실 자료:</b> 한국토지주택공사 손실보상 협의서 및 보상 감정평가서(지장물 물건별 평가 명세)</p>
+</section>
+
+<!-- ③ 서명 -->
+<section class="card" id="s3">
+<h2>③ 확인 및 서명</h2>
+<p>본인은 위 기재 내용이 사실과 다름이 없음을 확인합니다. 세무대리인은 본 확인서와 본인이 제출한 자료를 근거로 양도소득세 및 양도소득분 개인지방소득세를 신고합니다. 사실과 다른 기재나 자료 누락으로 추가 세액·가산세가 발생하는 경우 그 책임은 본인에게 있음을 확인합니다.</p>
+<label class="agree"><input type="checkbox" id="pledge"><span><b>위 내용에 동의합니다.</b></span></label>
+<h3>양도자 권순형 서명</h3>
+<div class="sig" id="sigA"><canvas></canvas><div class="ph">이 칸에 손가락으로 서명해 주세요</div></div>
+<div class="row"><button class="btn sec" data-clear="sigA">다시 쓰기</button></div>
+
+<div class="err" id="e3"></div>
+</section>
+
+<section class="card done" id="done">
+<h2>서명이 완료되었습니다</h2>
+<p>서명본 PDF가 만들어졌습니다. 아래 버튼을 눌러 <b>카카오톡으로 세주세무회계사무소에 보내 주세요.</b></p>
+<div class="row" style="flex-direction:column"><button class="btn pri" id="shareBtn">카카오톡 등으로 PDF 보내기</button><button class="btn sec" id="dlBtn">PDF 저장하기</button></div>
+<p class="note">공유 버튼이 동작하지 않으면 ‘PDF 저장하기’를 누른 뒤, 저장된 파일을 카카오톡 대화방에 첨부해 주세요.</p>
+</section>
+
+<div class="office">세주세무회계사무소 세무사 이태현 · 02-2205-0659 / 010-6510-0659<br>서울시 마포구 독막로 239 성진빌딩 4층 · sejutaxmapo@gmail.com</div>
+</div>
+
+<div class="foot"><div class="in"><button class="btn pri" id="submit">서명 완료하고 PDF 만들기</button></div></div>
+<div id="pdf"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const Q=[
+ {g:"1. 취득가액 관련"},
+ {id:"1",t:"광명동 503 토지에 관하여 보관하고 있는 매매계약서는 이전 소유자(김원현)의 취득계약서이며, 본인이 2015년 취득할 때의 매매계약서는 보관하고 있지 않습니다. 등기부등본에 기재된 거래가액 1,246,580,000원이 실제 매매대금이며, 그중 본인 지분(1/2) 대금 623,290,000원을 본인이 지급하였습니다.",o:["예","아니오"]},
+ {id:"2",t:"두 토지를 취득할 때 토지 위에 있던 지장물(비닐하우스·창고·포장·관정 등)과 수목의 가격은 토지 매매대금에 포함되어 있었으며, 따로 대금을 지급하지 않았습니다.",o:["예","아니오"],txt:"취득 후 본인이 새로 설치한 지장물이 있으면 적어 주세요 (없으면 비워 두세요)"},
+ {g:"2. 광명동 503 지장물의 소유관계"},
+ {id:"3",t:"광명동 503 토지 위 지장물(비닐하우스 770㎡, 동력 10kW, 대문·울타리, 관정, 바닥포장, 자갈포장)을 설치한 사람을 선택해 주세요.",o:["전 소유자 설치","본인 설치"],txt:"본인 설치인 경우 설치 연도와 설치비용",need:"본인 설치"},
+ {id:"4",t:"위 지장물은 본인 소유이며, 보상금 105,848,000원은 공유자와의 합의에 따라 전액 본인에게 귀속되었습니다. (공유자 김옥찬님의 확인은 별도로 받습니다)",o:["예","아니오"]},
+ {g:"3. 수목 보상금"},
+ {id:"5",t:"광명동 503의 수목(느티나무 50주, 오디나무 40주, 보상금 11,880,000원)은 판매 목적으로 재배한 조경수가 아니라 조경·자가용으로 심은 것입니다.",o:["예","아니오"]},
+ {id:"6",t:"광명동 503과 옥길동 314-3의 수목은 다른 곳으로 옮겨 심지 않고 사업시행자에게 그대로 넘겼습니다.",o:["예","아니오"],txt:"옮겨 심은 수목이 있으면 적어 주세요",need:"아니오"},
+ {g:"4. 옥길동 중개수수료"},
+ {id:"7",t:"제일공인중개사에 지급한 중개수수료 10,098,000원(2020.3.27. 세금계산서)은 2020년 귀속 종합소득세 신고 때 지엠엔지니어링의 비용으로 처리하였습니다.",o:["예","아니오"]},
+ {id:"8",t:"위 중개수수료의 부가가치세 918,000원을 2020년 1기 부가가치세 신고 때 매입세액으로 공제받았습니다.",o:["예","아니오","모르겠음"]},
+ {g:"5. 호이스트 등 시설 보상금(18,365,000원)"},
+ {id:"9",t:"옥길동 314-3의 호이스트(H빔·레일 포함) 등 시설 보상금 18,365,000원은 다른 장소로 옮기는 비용(이전비)이 아니라 시설의 가격을 보상받은 것이며, 해당 시설은 사업시행자에게 인도하여 본인이 더 이상 사용하지 않습니다.",o:["예","아니오"]},
+ {id:"9-1",t:"위 시설은 토지에 고정 설치된 것으로, 토지를 취득할 때 함께 취득하였고 그 가격이 토지 매매대금에 포함되어 있었습니다.",o:["예","아니오"],txt:"본인이 설치한 경우 설치 연도와 설치비용",need:"아니오"},
+ {id:"9-2",t:"위 시설을 지엠엔지니어링 장부에 기계장치 등 사업용 자산으로 올리거나 감가상각한 사실이 없습니다.",o:["예","아니오"]},
+ {id:"9-3",t:"위 보상금에 포함된 물품 중 믹서기·용접기·컴프레서·지게차·사무집기·원재료·반제품·완제품 등 다른 장소로 옮겨 계속 사용하거나 판매한 물품이 있습니다.",o:["있음","없음"],txt:"있으면 품목을 적어 주세요",need:"있음"},
+ {g:"6. 사업 관련 보상 및 사업장"},
+ {id:"10",t:"‘일반영업(이전)’ 항목의 영업손실보상금을 추가로 받았거나 받을 예정입니다.",o:["예","아니오"],txt:"예정 금액과 시기",need:"예"},
+ {id:"11",t:"지엠엔지니어링의 보상 후 상태를 선택해 주세요.",o:["이전하여 계속 운영","폐업(예정)"],txt:"이전한 주소 또는 폐업(예정)일",need:"*"},
+ {g:"7. 감면 한도 및 기타"},
+ {id:"12",t:"2022년부터 2025년까지 공익사업 수용·협의매수 등으로 양도소득세를 감면받은 사실이 없습니다.",o:["예(없음)","아니오(있음)"],txt:"감면받은 연도와 감면세액",need:"아니오(있음)"},
+ {id:"13",t:"2026년 중 이번 신고 대상 외에 다른 부동산·주식 등을 양도하였거나 연말까지 양도할 예정이 없습니다.",o:["예","아니오"],txt:"다른 양도 자산과 시기",need:"아니오"},
+ {id:"14",t:"양도일 현재 국내에 주소를 둔 거주자입니다.",o:["예","아니오"]}
+];
+const qs=document.getElementById('qs');
+Q.forEach(q=>{
+ if(q.g){const h=document.createElement('h3');h.textContent=q.g;qs.appendChild(h);return}
+ const d=document.createElement('div');d.className='q';d.id='q'+q.id;
+ d.innerHTML=`<div class="t"><span class="n">${q.id}</span>${q.t}</div><div class="opts">${q.o.map(o=>`<label><input type="radio" name="r${q.id}" value="${o}"><span>${o}</span></label>`).join('')}</div>`+(q.txt?`<input type="text" id="t${q.id}" placeholder="${q.txt}">`:'');
+ qs.appendChild(d);
+});
+/* 서명패드 */
+const pads={};
+function pad(id){
+ const box=document.getElementById(id),c=box.querySelector('canvas'),ph=box.querySelector('.ph'),ctx=c.getContext('2d');let draw=false,used=false,last=null;
+ function size(){const r=box.getBoundingClientRect(),dpr=window.devicePixelRatio||1;const img=used?c.toDataURL():null;c.width=r.width*dpr;c.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineWidth=2.6;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#111';if(img){const i=new Image();i.onload=()=>ctx.drawImage(i,0,0,r.width,r.height);i.src=img}}
+ size();window.addEventListener('resize',size);
+ const pos=e=>{const r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+ c.addEventListener('pointerdown',e=>{draw=true;last=pos(e);c.setPointerCapture(e.pointerId);used=true;ph.style.display='none'});
+ c.addEventListener('pointermove',e=>{if(!draw)return;const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p});
+ ['pointerup','pointercancel','pointerleave'].forEach(ev=>c.addEventListener(ev,()=>draw=false));
+ pads[id]={get used(){return used},clear(){ctx.clearRect(0,0,c.width,c.height);used=false;ph.style.display='flex'},img(){return c.toDataURL('image/png')}};
+}
+pad('sigA');
+document.querySelectorAll('[data-clear]').forEach(b=>b.onclick=()=>pads[b.dataset.clear].clear());
+/* 진행표시 */
+function stepUpdate(){const a=document.getElementById('readOk').checked;const ans=Q.filter(q=>q.id).every(q=>document.querySelector(`input[name="r${q.id}"]:checked`));
+ st1.classList.toggle('on',!a);st2.classList.toggle('on',a&&!ans);st3.classList.toggle('on',a&&ans)}
+document.addEventListener('change',stepUpdate);
+/* 제출 */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let pdfBlob=null;const fname='권순형_양도소득세_확인서_서명본.pdf';
+document.getElementById('submit').onclick=async()=>{
+ const e1=document.getElementById('e1'),e3=document.getElementById('e3');e1.style.display='none';e3.style.display='none';
+ if(!readOk.checked){e1.style.display='block';s1.scrollIntoView({behavior:'smooth'});return}
+ let first=null;Q.filter(q=>q.id).forEach(q=>{const el=document.getElementById('q'+q.id);const v=(document.querySelector(`input[name="r${q.id}"]:checked`)||{}).value;
+  let miss=!v; if(v&&q.txt&&(q.need===v||q.need==='*')&&!document.getElementById('t'+q.id).value.trim())miss=true;
+  el.classList.toggle('miss',miss);if(miss&&!first)first=el});
+ if(first){first.scrollIntoView({behavior:'smooth',block:'center'});alertMsg('표시된 항목에 답하거나 내용을 적어 주세요.');return}
+ const errs=[];if(!pledge.checked)errs.push('확인 및 서약에 동의해 주세요.');if(!pads.sigA.used)errs.push('양도자 서명을 해 주세요.');
+ 
+ if(errs.length){e3.innerHTML=errs.join('<br>');e3.style.display='block';s3.scrollIntoView({behavior:'smooth'});return}
+ const btn=document.getElementById('submit');btn.disabled=true;btn.textContent='PDF 만드는 중…';
+ try{await buildPdf();document.getElementById('done').classList.add('show');document.querySelector('.foot').style.display='none';done.scrollIntoView({behavior:'smooth'})}
+ catch(err){btn.disabled=false;btn.textContent='서명 완료하고 PDF 만들기';alert('PDF를 만들지 못했습니다. 인터넷 연결을 확인한 뒤 다시 눌러 주세요.')}
+};
+function alertMsg(m){const e=document.getElementById('e3');e.textContent=m;e.style.display='block'}
+async function buildPdf(){
+ const now=new Date(),ts=now.toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}),dt=now.toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'});
+ let rows='';Q.forEach(q=>{if(q.g){rows+=`<tr><th colspan="3" style="text-align:left">${q.g}</th></tr>`;return}
+  const v=document.querySelector(`input[name="r${q.id}"]:checked`).value,tx=q.txt?document.getElementById('t'+q.id).value.trim():'';
+  rows+=`<tr><td style="width:36px;text-align:center">${q.id}</td><td>${esc(q.t)}${tx?`<br><span style="color:#1f3864">▶ ${esc(tx)}</span>`:''}</td><td class="ans" style="width:92px;text-align:center">☑ ${esc(v)}</td></tr>`});
+ const P=document.getElementById('pdf');
+ P.innerHTML=`<h1>양도소득세 신고 관련 사실확인서</h1><div class="s">광명시흥 공공주택지구 토지·지장물 협의매수 – 2026. 8. 3. 양도분</div>
+ <table><tr><th style="width:90px">양도자</th><td>권순형 (1968. 07. 15.) · 인천광역시 남동구 구월로 192, 1311동 1202호 · 지엠엔지니어링(106-03-73291)</td></tr></table>
+ <h2>안내 내용 확인</h2><p>☑ 「양도소득세 신고 주요 쟁점 및 처리 안내」(취득가액 확인 방법, 쟁점 ①~⑦, 예상 납부세액 합계 725,513,355원)를 읽고 이해하였습니다.</p>
+ <h2>확인 사항</h2><table><tr><th>No</th><th>확인 내용</th><th>답변</th></tr>${rows}</table>
+ <h2>확인 및 서약</h2><p>☑ 본인은 위 기재 내용이 사실과 다름이 없음을 확인합니다. 세무대리인은 본 확인서와 본인이 제출한 자료를 근거로 양도소득세 및 양도소득분 개인지방소득세를 신고합니다. 사실과 다른 기재나 자료 누락으로 추가 세액·가산세가 발생하는 경우 그 책임은 본인에게 있음을 확인합니다.</p>
+ <div class="sigbox"><span>${dt}　확인자(양도자) 권순형</span><img src="${pads.sigA.img()}"></div>
+ <p style="text-align:center;font-weight:700;margin-top:16px">세주세무회계사무소 세무사 이태현 귀하</p>
+ <div class="meta">전자서명 일시: ${ts} (한국시간) · 기기: ${esc(navigator.userAgent.slice(0,90))}</div>`;
+ await (document.fonts?document.fonts.ready:Promise.resolve());
+ const cv=await html2canvas(P,{scale:2,backgroundColor:'#fff',useCORS:true});
+ const {jsPDF}=window.jspdf,pdf=new jsPDF('p','mm','a4'),pw=210,ph=297,m=8,iw=pw-m*2;
+ const pxPerMm=cv.width/iw,pageH=Math.floor((ph-m*2)*pxPerMm),k=cv.width/P.offsetWidth,top0=P.getBoundingClientRect().top;
+ const cuts=[...P.querySelectorAll('tr,p,h2,.sigbox,.meta')].map(e=>Math.round((e.getBoundingClientRect().bottom-top0)*k)).sort((a,b)=>a-b);
+ let y=0,first=true;
+ while(y<cv.height){let end=Math.min(y+pageH,cv.height);if(end<cv.height){const c=cuts.filter(v=>v>y+pageH*0.5&&v<=end).pop();if(c)end=c}const h=end-y;const s=document.createElement('canvas');s.width=cv.width;s.height=h;s.getContext('2d').drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+  if(!first)pdf.addPage();pdf.addImage(s.toDataURL('image/jpeg',0.92),'JPEG',m,m,iw,h/pxPerMm);first=false;y+=h}
+ pdfBlob=pdf.output('blob');
+}
+document.getElementById('dlBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(pdfBlob);a.download=fname;a.click()};
+document.getElementById('shareBtn').onclick=async()=>{
+ const f=new File([pdfBlob],fname,{type:'application/pdf'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'양도소득세 확인서 서명본',text:'권순형 양도소득세 확인서 서명본입니다.'})}catch(e){}}
+ else document.getElementById('dlBtn').click();
+};
+</script></body></html>
